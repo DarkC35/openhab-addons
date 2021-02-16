@@ -151,6 +151,7 @@
 /bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
+/bundles/org.openhab.binding.microsofttodo/ @DarkC35
 /bundles/org.openhab.binding.miele/ @kgoderis
 /bundles/org.openhab.binding.mihome/ @pboos
 /bundles/org.openhab.binding.miio/ @marcelrv
