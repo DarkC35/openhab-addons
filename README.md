@@ -1,4 +1,36 @@
-# openHAB Add-ons
+# openHAB Add-ons Fork for "Microsoft To Do" Binding
+
+## Introduction
+
+This fork is intended for a transparent development of a new openHAB binding for "Microsoft To Do". If the developed POC/MVP looks promissing, it is intended to be discussed in the openHAB community forum and should be merged into the official openhab-addons repo eventually.
+
+Development is done in the `microsofttodo` branch.
+
+## MVP
+
+The goal is to use the `Microsoft Graph Core SDK for Java` to be able to add new to-do tasks via openHAB rules for automation.
+
+Similar to the Telegram binding, it should be possible to configure a to-do task list with the required authentication settings and \<todoTaskListId\>.  
+
+For the rules there should be some kind of `addToDo()` actions available.
+
+## Use cases
+
+Some use cases I can think of such a binding would come in handy:
+* Add task "Change battery of device X" to my list when device X sends a LOW_BATTERY alert.
+* Add task "Change ink cartridge" to my list when the ink level is below a certain value.
+* Add task "Hang out the laundry" to my list when the washing maschine is done.
+
+And my personal favorite:
+* Add task "Hang out the laundry" to my *shared* list and assign randomly my girlfriend or me to it.
+
+## Nice to haves
+
+Currently it is unclear if the last use case possible, since the `Microsoft Graph REST API (v1.0)` does not mention the `assign` function, which is possible with the official native and web apps. So this functionality has to be analysed.
+
+Another aspekts to consider are the possibility to persist the tasks in openHAB, if it is possible to save them as an array and display them in the UI as a list with check possibilities, and, if it is possible to persist them in openHAB, how to make use of the `delta query` functionality of Microsoft Graph.
+
+# ORIGINAL README: openHAB Add-ons
 
 <img align="right" width="220" src="./logo.png" />
 
