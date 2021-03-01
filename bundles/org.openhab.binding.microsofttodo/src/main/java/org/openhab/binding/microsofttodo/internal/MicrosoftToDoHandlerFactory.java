@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.microsofttodo.internal;
 
-import static org.openhab.binding.microsofttodo.internal.MicrosoftToDoBindingConstants.*;
+import static org.openhab.binding.microsofttodo.internal.MicrosoftToDoBindingConstants.TODO_TASK_LIST_THING;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.microsofttodo", service = ThingHandlerFactory.class)
 public class MicrosoftToDoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TODO_TASK_LIST_THING);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +46,7 @@ public class MicrosoftToDoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (TODO_TASK_LIST_THING.equals(thingTypeUID)) {
             return new MicrosoftToDoHandler(thing);
         }
 
