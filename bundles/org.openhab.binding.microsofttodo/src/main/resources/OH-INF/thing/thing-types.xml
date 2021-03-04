@@ -4,8 +4,37 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="account">
+		<label>Microsoft Account Bridge</label>
+		<description>Sample Text</description>
+
+		<channels>
+			<channel id="accessToken" typeId="accessToken"/>
+			<channel id="todoTaskLists" typeId="todoTaskLists"></channel>
+		</channels>
+
+		<representation-property>clientId</representation-property>
+
+		<config-description>
+			<parameter name="clientId" type="text">
+				<required>true</required>
+				<label>Client ID</label>
+				<description>Sample</description>
+			</parameter>
+			<parameter name="clientSecret" type="text">
+				<required>true</required>
+				<label>Client Secret</label>
+				<description>Sample</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="todoTaskList">
-		<label>MicrosoftToDo Binding Thing</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>MicrosoftToDo TodoTaskList</label>
 		<description>Sample thing for MicrosoftToDo Binding</description>
 
 		<config-description>
@@ -13,19 +42,21 @@
 				<label>TodoTaskList ID</label>
 				<description>This is a sample text configuration parameter</description>
 			</parameter>
-			<parameter name="clientId" type="text" required="true">
-				<label>Client ID</label>
-				<description>This is a sample text configuration parameter</description>
-			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>microsofttodoItem</item-type>
-		<label>MicrosoftToDo Binding Channel</label>
-		<description>Sample channel for MicrosoftToDo Binding</description>
+	<!-- Channel Types -->
+	<channel-type id="accessToken" advanced="true">
+		<item-type>String</item-type>
+		<label>Access Token</label>
+		<description>The access token used to authorize calls to the Microsoft Graph.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="todoTaskLists">
+		<item-type>String</item-type>
+		<label>Todo Task Lists</label>
+		<description>List of todo task lists.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

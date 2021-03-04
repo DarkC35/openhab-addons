@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.microsofttodo.internal;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -26,9 +30,27 @@ public class MicrosoftToDoBindingConstants {
 
     private static final String BINDING_ID = "microsofttodo";
 
+    public static final String MICROSOFT_OAUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0";
+    public static final String MICROSOFT_AUTHORIZE_URL = MICROSOFT_OAUTH_URL + "/authorize";
+    public static final String MICROSOFT_TOKEN_URL = MICROSOFT_OAUTH_URL + "/token";
+
+    public static final List<String> MICROSOFT_SCOPES_LIST = Arrays.asList("offline_access",
+            "https://graph.microsoft.com/user.read", "https://graph.microsoft.com/Tasks.Read");
+    public static final String MICROSOFT_SCOPES = MICROSOFT_SCOPES_LIST.stream().collect(Collectors.joining(" "));
+
+    // Authorization related Servlet and resources aliases.
+    public static final String MICROSOFT_TODO_ALIAS = "/connectmicrosofttodo";
+    public static final String MICROSOFT_TODO_IMG_ALIAS = "/img";
+
     // List of all Thing Type UIDs
-    public static final ThingTypeUID TODO_TASK_LIST_THING = new ThingTypeUID(BINDING_ID, "todoTaskList");
+
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_TODO_TASK_LIST = new ThingTypeUID(BINDING_ID, "todoTaskList");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_ACCESSTOKEN = "accessToken";
+
+    // List of Bridge/Thing properties
+    public static final String PROPERTY_MICROSOFT_USER = "user";
+    public static final String PROPERTY_MICROSOFT_EMAIL = "email";
 }
