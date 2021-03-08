@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.microsofttodo.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Generic MicrosoftToDo exception class.
  *
  * @author Kevin Haunschmied - Initial contribution
  */
+@NonNullByDefault
 public class MicrosoftToDoException extends RuntimeException {
 
     private static final long serialVersionUID = 4430428416887944560L;
@@ -36,7 +40,7 @@ public class MicrosoftToDoException extends RuntimeException {
      * @param message MicrosoftToDo error message
      * @param cause Original cause of this exception
      */
-    public MicrosoftToDoException(String message, Throwable cause) {
+    public MicrosoftToDoException(@Nullable String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -84,16 +84,18 @@ public class MicrosoftToDoAuthServlet extends HttpServlet {
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-        logger.debug("Microsoft auth callback servlet received GET request {}.", req.getRequestURI());
-        final String servletBaseURL = req.getRequestURL().toString();
-        final Map<String, String> replaceMap = new HashMap<>();
+        if (req != null && resp != null) {
+            logger.debug("Microsoft auth callback servlet received GET request {}.", req.getRequestURI());
+            final String servletBaseURL = req.getRequestURL().toString();
+            final Map<String, String> replaceMap = new HashMap<>();
 
-        handleMicrosoftRedirect(replaceMap, servletBaseURL, req.getQueryString());
-        resp.setContentType(CONTENT_TYPE);
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
-        replaceMap.put(KEY_ACCOUNTS, formatAccounts(accountTemplate, servletBaseURL));
-        resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
-        resp.getWriter().close();
+            handleMicrosoftRedirect(replaceMap, servletBaseURL, req.getQueryString());
+            resp.setContentType(CONTENT_TYPE);
+            replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
+            replaceMap.put(KEY_ACCOUNTS, formatAccounts(accountTemplate, servletBaseURL));
+            resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            resp.getWriter().close();
+        }
     }
 
     /**
@@ -113,7 +115,7 @@ public class MicrosoftToDoAuthServlet extends HttpServlet {
         replaceMap.put(KEY_PAGE_REFRESH, "");
 
         if (queryString != null) {
-            final MultiMap<String> params = new MultiMap<>();
+            final MultiMap<@Nullable String> params = new MultiMap<>();
             UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
             final String reqCode = params.getString("code");
             final String reqState = params.getString("state");
@@ -122,7 +124,7 @@ public class MicrosoftToDoAuthServlet extends HttpServlet {
 
             replaceMap.put(KEY_PAGE_REFRESH,
                     params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
-            if (!StringUtil.isBlank(reqError)) {
+            if (!StringUtil.isBlank(reqError) && !StringUtil.isBlank(reqErrorDescription)) {
                 logger.debug("Microsoft redirected with an error: {} ({})", reqError, reqErrorDescription);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError, reqErrorDescription));
             } else if (!StringUtil.isBlank(reqState)) {

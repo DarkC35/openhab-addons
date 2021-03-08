@@ -15,6 +15,8 @@ package org.openhab.binding.microsofttodo.internal.api;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -38,6 +40,7 @@ import okhttp3.Request;
  *
  * @author Kevin Haunschmied - Initial contribution
  */
+@NonNullByDefault
 public class MicrosoftToDoAuthProvider extends BaseAuthentication
         // using deprecated IAuthenticationProvider here since it is required for microsoft-graph 2.x
         implements IAuthenticationProvider, ICoreAuthenticationProvider {
@@ -47,7 +50,8 @@ public class MicrosoftToDoAuthProvider extends BaseAuthentication
     private final OAuthClientService oAuthService;
 
     public MicrosoftToDoAuthProvider(String clientId, List<String> scopes, String redirectUri,
-            NationalCloud nationalCloud, String tenant, String clientSecret, OAuthClientService oAuthService) {
+            @Nullable NationalCloud nationalCloud, @Nullable String tenant, String clientSecret,
+            OAuthClientService oAuthService) {
         super(scopes, clientId,
                 GetAuthority(nationalCloud == null ? NationalCloud.Global : nationalCloud,
                         tenant == null ? AuthConstants.Tenants.Common : tenant),
@@ -57,27 +61,32 @@ public class MicrosoftToDoAuthProvider extends BaseAuthentication
     }
 
     @Override
-    protected String getAccessTokenSilent() {
+    protected @Nullable String getAccessTokenSilent() {
         try {
             AccessTokenResponse accessTokenResponse = oAuthService.getAccessTokenResponse();
             if (accessTokenResponse != null) {
                 return accessTokenResponse.getAccessToken();
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.debug("Exception during access of token response: {}", e);
+            logger.debug("Exception during access of token response: ", e);
         }
         return null;
     }
 
     @Override
-    public Request authenticateRequest(Request request) {
+    public @Nullable Request authenticateRequest(@Nullable Request request) {
+        if (request == null) {
+            return null;
+        }
         String tokenParameter = AuthConstants.BEARER + getAccessTokenSilent();
         return request.newBuilder().addHeader(AuthConstants.AUTHORIZATION_HEADER, tokenParameter).build();
     }
 
     @Override
-    public void authenticateRequest(IHttpRequest request) {
-        String tokenParameter = AuthConstants.BEARER + getAccessTokenSilent();
-        request.addHeader(AuthConstants.AUTHORIZATION_HEADER, tokenParameter);
+    public void authenticateRequest(@Nullable IHttpRequest request) {
+        if (request != null) {
+            String tokenParameter = AuthConstants.BEARER + getAccessTokenSilent();
+            request.addHeader(AuthConstants.AUTHORIZATION_HEADER, tokenParameter);
+        }
     }
 }

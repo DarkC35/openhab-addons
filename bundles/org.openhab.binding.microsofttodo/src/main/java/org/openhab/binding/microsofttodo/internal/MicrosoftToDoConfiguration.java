@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.microsofttodo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MicrosoftToDoConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kevin Haunschmied - Initial contribution
  */
-
+@NonNullByDefault
 public class MicrosoftToDoConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String clientId;
-    public String clientSecret;
+    public @NonNullByDefault({}) String clientId;
+    public @NonNullByDefault({}) String clientSecret;
 }

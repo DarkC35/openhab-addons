@@ -49,6 +49,11 @@ import org.slf4j.LoggerFactory;
 import com.microsoft.graph.models.extensions.Todo;
 import com.microsoft.graph.models.extensions.User;
 
+/**
+ * The {@link MicrosoftToDoApi} // TODO: add description
+ *
+ * @author Kevin Haunschmied - Initial contribution
+ */
 @NonNullByDefault
 public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
         implements MicrosoftToDoAccountHandler, AccessTokenRefreshListener {
