@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 
-import com.microsoft.graph.models.extensions.Todo;
+import com.microsoft.graph.models.extensions.TodoTaskList;
 
 /**
  * Interface to decouple MicrosoftToDo Bridge Handler implementation from other code.
@@ -46,7 +46,7 @@ public interface MicrosoftToDoAccountHandler extends ThingHandler {
     /**
      * @return List of todo task lists associated with this Microsoft Account Handler
      */
-    List<Todo> getTodoTaskLists();
+    List<TodoTaskList> getTodoTaskLists();
 
     /**
      * @return Returns true if the MicrosoftToDo Bridge is authorized.

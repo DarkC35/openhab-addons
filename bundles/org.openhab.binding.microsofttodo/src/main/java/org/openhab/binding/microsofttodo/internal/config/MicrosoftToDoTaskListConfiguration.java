@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.microsofttodo.internal;
+package org.openhab.binding.microsofttodo.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MicrosoftToDoConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MicrosoftToDoTaskListConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kevin Haunschmied - Initial contribution
  */
 @NonNullByDefault
-public class MicrosoftToDoConfiguration {
-    public @NonNullByDefault({}) String clientId;
-    public @NonNullByDefault({}) String clientSecret;
+public class MicrosoftToDoTaskListConfiguration {
+    public @NonNullByDefault({}) String todoTaskListId;
+    public @NonNullByDefault({}) String listSeparationDelimiter;
 }

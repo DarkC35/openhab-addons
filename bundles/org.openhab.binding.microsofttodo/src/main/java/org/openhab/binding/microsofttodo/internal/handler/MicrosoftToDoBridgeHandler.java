@@ -22,9 +22,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.microsofttodo.internal.MicrosoftToDoAccountHandler;
-import org.openhab.binding.microsofttodo.internal.MicrosoftToDoConfiguration;
 import org.openhab.binding.microsofttodo.internal.api.MicrosoftToDoApi;
 import org.openhab.binding.microsofttodo.internal.api.exception.MicrosoftToDoException;
+import org.openhab.binding.microsofttodo.internal.config.MicrosoftToDoBridgeConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -40,13 +40,14 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.microsoft.graph.models.extensions.Todo;
+import com.microsoft.graph.models.extensions.TodoTaskList;
 import com.microsoft.graph.models.extensions.User;
 
 /**
@@ -61,27 +62,38 @@ public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(MicrosoftToDoBridgeHandler.class);
 
     private final OAuthFactory oAuthFactory;
+    private final MicrosoftToDoDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private final ChannelUID todoTaskListsChannelUID;
 
     private @NonNullByDefault({}) OAuthClientService oAuthService;
-    private @NonNullByDefault({}) MicrosoftToDoConfiguration configuration;
+    private @NonNullByDefault({}) MicrosoftToDoBridgeConfiguration configuration;
     private @NonNullByDefault({}) MicrosoftToDoApi microsoftToDoApi;
-    private @NonNullByDefault({}) ExpiringCache<List<Todo>> todoTaskListsCache;
+    private @NonNullByDefault({}) ExpiringCache<List<TodoTaskList>> todoTaskListsCache;
 
-    public MicrosoftToDoBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory) {
+    public MicrosoftToDoBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory,
+            MicrosoftToDoDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+        this.todoTaskListsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_TODO_TASK_LISTS);
+    }
+
+    public MicrosoftToDoApi getMicrosoftToDoApi() {
+        return microsoftToDoApi;
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        configuration = getConfigAs(MicrosoftToDoConfiguration.class);
+        configuration = getConfigAs(MicrosoftToDoBridgeConfiguration.class);
         oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), MICROSOFT_TOKEN_URL,
                 MICROSOFT_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, MICROSOFT_SCOPES, true);
         oAuthService.addAccessTokenRefreshListener(MicrosoftToDoBridgeHandler.this);
         // TODO: make NationalCloud and tenant configurable with advanced configurations
         microsoftToDoApi = new MicrosoftToDoApi(configuration.clientId, MICROSOFT_SCOPES_LIST, "", null, null,
                 configuration.clientSecret, oAuthService);
+        // TODO: make time of cache configurable (same as polling time?)
+        todoTaskListsCache = new ExpiringCache<>((1000 * 60 * 1), microsoftToDoApi::getTodoTaskLists);
     }
 
     @Override
@@ -143,6 +155,21 @@ public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
+    public boolean equalsThingUID(String thingUID) {
+        return getThing().getUID().getAsString().equals(thingUID);
+    }
+
+    @Override
+    public String formatAuthorizationUrl(String redirectUri) {
+        try {
+            return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+        } catch (OAuthException e) {
+            logger.debug("Error constructing AuthorizationUrl: ", e);
+            return "";
+        }
+    }
+
+    @Override
     public String authorize(String redirectUrl, String reqCode) {
         try {
             logger.debug("Make call to Microsoft to get access token.");
@@ -151,9 +178,7 @@ public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
             onAccessTokenResponse(credentials);
             final String user = updateProperties();
             logger.debug("Authorized for user: {}", user);
-            // startPolling();
-            // TODO: implement polling and consider webhooks to support/replace polling
-            // see: https://docs.microsoft.com/en-us/graph/webhooks
+            startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -178,19 +203,34 @@ public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
         return "";
     }
 
-    @Override
-    public boolean equalsThingUID(String thingUID) {
-        return getThing().getUID().getAsString().equals(thingUID);
+    // TODO: implement polling
+    private void startPolling() {
+        // temp implementation
+        final List<TodoTaskList> cachedTodoTaskLists = todoTaskListsCache.getValue();
+        final List<TodoTaskList> todoTaskLists = cachedTodoTaskLists == null ? Collections.emptyList()
+                : cachedTodoTaskLists;
+        dynamicStateDescriptionProvider.setTodoTaskLists(todoTaskListsChannelUID, todoTaskLists);
+        final @Nullable TodoTaskList firstList = todoTaskLists.size() == 0 ? null : todoTaskLists.get(0);
+        final StringType initialStringType = firstList == null ? StringType.EMPTY : new StringType(firstList.id);
+        updateChannelState(CHANNEL_TODO_TASK_LISTS, initialStringType);
+        updateTodoTaskListsStatus(todoTaskLists);
     }
 
     @Override
-    public String formatAuthorizationUrl(String redirectUri) {
-        try {
-            return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
-        } catch (OAuthException e) {
-            logger.debug("Error constructing AuthorizationUrl: ", e);
-            return "";
-        }
+    public List<TodoTaskList> getTodoTaskLists() {
+        final List<TodoTaskList> todoTaskLists = todoTaskListsCache.getValue();
+
+        return todoTaskLists == null ? Collections.emptyList() : todoTaskLists;
+    }
+
+    private void updateTodoTaskListsStatus(List<TodoTaskList> todoTaskLists) {
+        getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof MicrosoftToDoTaskListHandler)
+                .forEach(thing -> todoTaskLists.stream().anyMatch(list -> {
+                    final ThingHandler handler = thing.getHandler();
+                    return handler == null ? false
+                            : ((MicrosoftToDoTaskListHandler) handler).updateTodoTaskListStatus(list);
+                }));
+        // TODO: handle note updated lists?
     }
 
     /**
@@ -205,12 +245,5 @@ public class MicrosoftToDoBridgeHandler extends BaseBridgeHandler
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
         }
-    }
-
-    @Override
-    public List<Todo> getTodoTaskLists() {
-        final List<Todo> todoTaskLists = todoTaskListsCache.getValue();
-
-        return todoTaskLists == null ? Collections.emptyList() : todoTaskLists;
     }
 }

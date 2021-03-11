@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.microsofttodo.internal.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -20,8 +21,14 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 
 import com.microsoft.graph.auth.enums.NationalCloud;
 import com.microsoft.graph.models.extensions.IGraphServiceClient;
+import com.microsoft.graph.models.extensions.TodoTask;
+import com.microsoft.graph.models.extensions.TodoTaskList;
 import com.microsoft.graph.models.extensions.User;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
+import com.microsoft.graph.requests.extensions.ITodoTaskCollectionPage;
+import com.microsoft.graph.requests.extensions.ITodoTaskCollectionRequestBuilder;
+import com.microsoft.graph.requests.extensions.ITodoTaskListCollectionPage;
+import com.microsoft.graph.requests.extensions.ITodoTaskListCollectionRequestBuilder;
 
 /**
  * The {@link MicrosoftToDoApi} // TODO: add description
@@ -46,5 +53,33 @@ public class MicrosoftToDoApi {
 
     public User getCurrentUser() {
         return graphClient.me().buildRequest().get();
+    }
+
+    public List<TodoTaskList> getTodoTaskLists() {
+        List<TodoTaskList> todoTaskLists = new ArrayList<>();
+        ITodoTaskListCollectionPage page = graphClient.me().todo().lists().buildRequest().get();
+        while (page != null) {
+            todoTaskLists.addAll(page.getCurrentPage());
+            ITodoTaskListCollectionRequestBuilder builder = page.getNextPage();
+            if (builder == null) {
+                break;
+            }
+            page = builder.buildRequest().get();
+        }
+        return todoTaskLists;
+    }
+
+    public List<TodoTask> getTodoTasks(String todoTaskListId) {
+        List<TodoTask> todoTasks = new ArrayList<>();
+        ITodoTaskCollectionPage page = graphClient.me().todo().lists(todoTaskListId).tasks().buildRequest().get();
+        while (page != null) {
+            todoTasks.addAll(page.getCurrentPage());
+            ITodoTaskCollectionRequestBuilder builder = page.getNextPage();
+            if (builder == null) {
+                break;
+            }
+            page = builder.buildRequest().get();
+        }
+        return todoTasks;
     }
 }

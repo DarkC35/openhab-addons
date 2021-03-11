@@ -49,8 +49,26 @@ public class MicrosoftToDoBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_ACCESSTOKEN = "accessToken";
+    public static final String CHANNEL_TODO_TASK_LISTS = "todoTaskLists";
+
+    public static final String CHANNEL_TODO_TASK_LIST_ID = "id";
+    public static final String CHANNEL_TODO_TASK_LIST_DISPLAY_NAME = "displayName";
+    public static final String CHANNEL_TODO_TASK_LIST_IS_OWNER = "isOwner";
+    public static final String CHANNEL_TODO_TASK_LIST_IS_SHARED = "isShared";
+    public static final String CHANNEL_TODO_TASK_LIST_WELLKNOWN_LIST_NAME = "wellknownListName";
+    public static final String CHANNEL_TODO_TASK_LIST_NEXT_DUE_DATE_TIME = "nextDueDateTime";
+    public static final String CHANNEL_TODO_TASK_LIST_TODO_TASKS = "todoTasks";
+    public static final String CHANNEL_TODO_TASK_LIST_COMPLETED_TODO_TASKS = "completedTodoTasks";
+    public static final String CHANNEL_TODO_TASK_LIST_OPEN_TODO_TASKS = "openTodoTasks";
+    public static final String CHANNEL_TODO_TASK_LIST_TODO_TASKS_STRING = "todoTasksString";
+    public static final String CHANNEL_TODO_TASK_LIST_COMPLETED_TODO_TASKS_STRING = "completedTodoTasksString";
+    public static final String CHANNEL_TODO_TASK_LIST_OPEN_TODO_TASKS_STRING = "openTodoTasksString";
+    public static final String CHANNEL_TODO_TASK_LIST_NO_TODO_TASKS = "numberOfTodoTasks";
+    public static final String CHANNEL_TODO_TASK_LIST_NO_COMPLETED_TODO_TASKS = "numberOfCompletedTodoTasks";
+    public static final String CHANNEL_TODO_TASK_LIST_NO_OPEN_TODO_TASKS = "numberOfOpenTodoTasks";
 
     // List of Bridge/Thing properties
     public static final String PROPERTY_MICROSOFT_USER = "user";
     public static final String PROPERTY_MICROSOFT_EMAIL = "email";
+    public static final String PROPERTY_TODO_TASK_LIST_ID = "todoTaskListId";
 }

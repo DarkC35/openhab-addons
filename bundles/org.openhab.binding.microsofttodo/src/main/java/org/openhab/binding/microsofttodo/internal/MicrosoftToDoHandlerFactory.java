@@ -17,6 +17,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.microsofttodo.internal.handler.MicrosoftToDoBridgeHandler;
+import org.openhab.binding.microsofttodo.internal.handler.MicrosoftToDoDynamicStateDescriptionProvider;
+import org.openhab.binding.microsofttodo.internal.handler.MicrosoftToDoTaskListHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -43,12 +45,15 @@ public class MicrosoftToDoHandlerFactory extends BaseThingHandlerFactory {
 
     private final OAuthFactory oAuthFactory;
     private final MicrosoftToDoAuthService authService;
+    private final MicrosoftToDoDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
     @Activate
     public MicrosoftToDoHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference MicrosoftToDoAuthService authService) {
+            @Reference MicrosoftToDoAuthService authService,
+            @Reference MicrosoftToDoDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         this.oAuthFactory = oAuthFactory;
         this.authService = authService;
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
     }
 
     @Override
@@ -61,9 +66,12 @@ public class MicrosoftToDoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (MicrosoftToDoBindingConstants.THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            final MicrosoftToDoBridgeHandler handler = new MicrosoftToDoBridgeHandler((Bridge) thing, oAuthFactory);
+            final MicrosoftToDoBridgeHandler handler = new MicrosoftToDoBridgeHandler((Bridge) thing, oAuthFactory,
+                    dynamicStateDescriptionProvider);
             authService.addMicrosoftToDoAccountHandler(handler);
             return handler;
+        } else if (MicrosoftToDoBindingConstants.THING_TYPE_TODO_TASK_LIST.equals(thingTypeUID)) {
+            return new MicrosoftToDoTaskListHandler(thing, dynamicStateDescriptionProvider);
         }
 
         return null;

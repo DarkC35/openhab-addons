@@ -10,7 +10,7 @@
 
 		<channels>
 			<channel id="accessToken" typeId="accessToken"/>
-			<channel id="todoTaskLists" typeId="todoTaskLists"></channel>
+			<channel id="todoTaskLists" typeId="todoTaskLists"/>
 		</channels>
 
 		<representation-property>clientId</representation-property>
@@ -37,10 +37,36 @@
 		<label>MicrosoftToDo TodoTaskList</label>
 		<description>Sample thing for MicrosoftToDo Binding</description>
 
+		<channels>
+			<!-- TODO: "Today": noTasksToday, noTasksCompletedToday -->
+			<!-- TODO: assignedToMeTodoTasks -->
+			<channel id="completedTodoTasks" typeId="completedTodoTasks"/>
+			<channel id="completedTodoTasksString" typeId="completedTodoTasksString"/>
+			<channel id="displayName" typeId="displayName"/>
+			<channel id="isOwner" typeId="isOwner"/>
+			<channel id="isShared" typeId="isShared"/>
+			<channel id="nextDueDateTime" typeId="nextDueDateTime"/>
+			<channel id="numberOfTodoTasks" typeId="numberOfTodoTasks"/>
+			<channel id="numberOfCompletedTodoTasks" typeId="numberOfCompletedTodoTasks"/>
+			<channel id="numberOfOpenTodoTasks" typeId="numberOfOpenTodoTasks"/>
+			<channel id="openTodoTasks" typeId="openTodoTasks"/>
+			<channel id="openTodoTasksString" typeId="openTodoTasksString"/>
+			<channel id="todoTasks" typeId="todoTasks"/>
+			<channel id="todoTasksString" typeId="todoTasksString"/>
+			<channel id="wellknownListName" typeId="wellknownListName"/>
+		</channels>
+
 		<config-description>
 			<parameter name="todoTaskListId" type="text" required="true">
 				<label>TodoTaskList ID</label>
 				<description>This is a sample text configuration parameter</description>
+			</parameter>
+			<parameter name="listSeparationDelimiter" type="text" required="true" pattern=".+">
+				<label>List Separation Delimiter</label>
+				<description>The delimiter used to separate the list strings. Edit this when you use the separation delimiter in one
+					of your task titles.</description>
+				<advanced>true</advanced>
+				<default>,</default>
 			</parameter>
 		</config-description>
 
@@ -57,6 +83,87 @@
 		<item-type>String</item-type>
 		<label>Todo Task Lists</label>
 		<description>List of todo task lists.</description>
+	</channel-type>
+
+	<channel-type id="completedTodoTasks">
+		<item-type>String</item-type>
+		<label>Completed Todo Tasks</label>
+		<description>List of completed todo tasks.</description>
+	</channel-type>
+	<channel-type id="completedTodoTasksString">
+		<item-type>String</item-type>
+		<label>Completed Todo Tasks String</label>
+		<description>A list of completed todo tasks separeted by the configured separation character. (Default separation
+			character: ,)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="displayName">
+		<item-type>String</item-type>
+		<label>Display Name</label>
+		<description>The name of the task list.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isOwner" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Owner</label>
+		<description>Whether or not the user is the owner of the todo task list.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isShared" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Shared</label>
+		<description>Whether or not the todo task list is shared.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nextDueDateTime">
+		<item-type>DateTime</item-type>
+		<label>Next Due DateTime</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="numberOfTodoTasks">
+		<item-type>Number</item-type>
+		<label>Number of Todo Tasks</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="numberOfCompletedTodoTasks">
+		<item-type>Number</item-type>
+		<label>Number of Completed Todo Tasks</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="numberOfOpenTodoTasks">
+		<item-type>Number</item-type>
+		<label>Number of Open Todo Tasks</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="openTodoTasks">
+		<item-type>String</item-type>
+		<label>Open Todo Tasks</label>
+		<description>List of open todo tasks.</description>
+	</channel-type>
+	<channel-type id="openTodoTasksString">
+		<item-type>String</item-type>
+		<label>Open Todo Tasks String</label>
+		<description>A list of open todo tasks separeted by the configured separation character. (Default separation
+			character: ,)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="todoTasks">
+		<item-type>String</item-type>
+		<label>Todo Tasks</label>
+		<description>List of todo tasks.</description>
+	</channel-type>
+	<channel-type id="todoTasksString">
+		<item-type>String</item-type>
+		<label>Todo Tasks String</label>
+		<description>A list of todo tasks separeted by the configured separation character. (Default separation character: ,)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wellknownListName" advanced="true">
+		<item-type>String</item-type>
+		<label>Wellknown List Name</label>
+		<description>Property indicating the list name if the given list is a well-known list. Possible values are: none,
+			defaultList, flaggedEmails, unknownFutureValue.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
